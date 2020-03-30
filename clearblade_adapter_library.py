@@ -124,6 +124,8 @@ class AdapterLibrary:
 
     def __on_MQTT_disconnect(self, client, userdata, rc):
         cbLogs.info("AdapterLibrary - __on_MQTT_disconnect - MQTT disconnected with rc " + str(rc))
+        if self._sub_topic != None and rc == 1:
+            cbLogs.warn("AdapterLibrary - __on_MQTT_disconnect - Verify that your service account has permission to subscribe to the topic: " + self._sub_topic)
 
     def __on_MQTT_subscribe(self, client, userdata, mid, granted_qos):
         cbLogs.info("AdapterLibrary - __on_MQTT_subscribe - MQTT successfully subcribed to topic " + self._sub_topic)
