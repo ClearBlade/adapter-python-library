@@ -137,7 +137,7 @@ class AdapterLibrary:
         cbLogs.info("AdapterLibrary - __on_MQTT_message_received - MQTT message received on topic " + message.topic)
         if self._cb_message_handler != None:
             cbLogs.info("calling message handler")
-            self._cb_message_handler(message)        
+            self._cb_message_handler(client, message)        
 
     def __parse_env_variables(self):
         """Parse environment variables"""
