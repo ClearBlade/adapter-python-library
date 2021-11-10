@@ -238,10 +238,6 @@ if __name__ == "__main__":
     # os.environ['CB_SERVICE_ACCOUNT'] = ""
     # os.environ['CB_SERVICE_ACCOUNT_TOKEN'] = ""
     
-    os.environ['CB_SERVICE_ACCOUNT'] = "admin@clearblade.com"
-    os.environ['CB_SERVICE_ACCOUNT_TOKEN'] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJkNmM4Y2I5ODBjYzZiYWM4OTY4OWMzOTRlNDBiIiwic2lkIjoiNDJjYjI2NzEtMDBlZC00Y2Y4LTk1MmEtODQ3MmM5YjBmYmZiIiwidXQiOjIsInR0IjoxLCJleHAiOi0xLCJpYXQiOjE2MzYzOTc2MTF9.0fSSPAGy889Bp_EKVcGsA4paKIwUS-Bk7Nc_ijKuQHE"
-
-    
     adapter = AdapterLibrary("test_adapter")
     _ = adapter.parse_arguments()
     _ = adapter.initialize_clearblade()
