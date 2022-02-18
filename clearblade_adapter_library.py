@@ -32,7 +32,7 @@ class AdapterLibrary:
         cbLogs.info("AdapterLibrary - parse_arguments - parsing environment variables and flags")
         self.__parse_env_variables()
         self.__parse_flags()
-        self._args[self.LOG_LEVEL_ARG_KEY] = string.upper(self._args[self.LOG_LEVEL_ARG_KEY])
+        self._args[self.LOG_LEVEL_ARG_KEY] = self._args[self.LOG_LEVEL_ARG_KEY].upper()
         logging.basicConfig(level=self._args[self.LOG_LEVEL_ARG_KEY])
         if self._args[self.LOG_LEVEL_ARG_KEY] != "DEBUG":
             cbLogs.DEBUG = False
@@ -63,7 +63,10 @@ class AdapterLibrary:
         else:
             self.__auth_with_device()
 
-        return self.__fetch_adapter_config()
+        try:
+            return self.__fetch_adapter_config()
+        except:
+            return
 
     def connect_MQTT(self, topic="", cb_message_handler=None):
         cbLogs.info("AdapterLibrary - connect_MQTT - Initializing the ClearBlade MQTT message broker")
@@ -87,7 +90,7 @@ class AdapterLibrary:
 
     def __auth_with_service_account(self):
         cbLogs.info("AdapterLibrary - __auth_with_service_account - Authenticating as service account")
-        self._device_client = self._cb_system.Device(self._args[self.SERVICE_ACCOUNT_ARG_KEY], authToken=self._args[self.SERVICE_ACCOUNT_TOKEN_ARG_KEY])
+        self._device_client = self._cb_system.ServiceUser(self._args[self.SERVICE_ACCOUNT_ARG_KEY], self._args[self.SERVICE_ACCOUNT_TOKEN_ARG_KEY])
 
     def __auth_with_device(self):
         cbLogs.info("AdapterLibrary - __auth_with_device - Authenticating as device")
@@ -134,7 +137,7 @@ class AdapterLibrary:
         cbLogs.info("AdapterLibrary - __on_MQTT_message_received - MQTT message received on topic " + message.topic)
         if self._cb_message_handler != None:
             cbLogs.info("calling message handler")
-            self._cb_message_handler(message)        
+            self._cb_message_handler(client, message)        
 
     def __parse_env_variables(self):
         """Parse environment variables"""
@@ -201,3 +204,45 @@ class AdapterLibrary:
         else:
             return input
 
+        
+if __name__ == "__main__":
+    """
+    Start up command for connecting to platform brokers -         
+    
+    python clearblade_adapter_library.py \
+        --systemKey="<your system key>" \
+        --systemSecret="<your system secret>" \
+        --platformURL="https://<your instance name>.clearblade.com" \
+        --messagingURL="<your instance name>.clearblade.com"
+    
+    Start up command on the edges - 
+    
+    python clearblade_adapter_library.py
+    """
+    
+    import time
+    
+    def on_message(client, message):
+        payload = json.loads(message.payload.decode("utf-8"))
+        print("Message Recieved: ", str(payload))
+        client.publish("pub_topic", "hello")
+        print("Message Published")
+    
+    
+    # Uncomment the two lines below only when authenticating with service user
+    # and when you want to connect to any platform broker. After uncommenting,
+    # add the appropriate service_user account email and token. If you dont
+    # uncomment these two lines you'll get an error "CB Error: Device Password 
+    # is required when not using a Service Account, can be supplied with --password flag"
+    
+    # os.environ['CB_SERVICE_ACCOUNT'] = ""
+    # os.environ['CB_SERVICE_ACCOUNT_TOKEN'] = ""
+    
+    adapter = AdapterLibrary("test_adapter")
+    _ = adapter.parse_arguments()
+    _ = adapter.initialize_clearblade()
+    adapter.connect_MQTT(topic="sub_topic", cb_message_handler=on_message)
+    print('\nConnected..\n\n')
+    while 1:
+        print('Listening...')
+        time.sleep(1)
