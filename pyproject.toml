@@ -10,8 +10,10 @@ repository = "https://github.com/ClearBlade/adapter-python-library"
 packages = [{include = "clearblade_adapter_library.py"}]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 clearblade = "^2.4.0"
+requests = "^2.32.4"
+urllib3 = "^2.5.0"
 
 [build-system]
 requires = ["poetry-core"]
