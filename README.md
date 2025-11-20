@@ -50,20 +50,16 @@ All ClearBlade Adapters require a certain set of System specific variables to st
 | Name | CLI Flag | Environment Variable | Default |
 | --- | --- | --- | --- |
 | System Key | `--systemKey` | `CB_SYSTEM_KEY` | N/A |
-| System Secret (**deprecated**) | `--systemSecret` | `CB_SYSTEM_SECRET` | N/A |
 | Platform/Edge URL | `--platformURL` | N/A | `http://localhost:9000` |
 | Platform/Edge Messaging URL | `--messagingURL` | N/A | `localhost:1883` |
-| Device Name (**depreciated**) | `--deviceName` | N/A | `adapter_name` provided when initializing `AdapterLibrary` |
-| Device Password/Active Key (**depreciated)** | `--password` | N/A | N/A |
 | Device Service Account | N/A | `CB_SERVICE_ACCOUNT` | N/A |
 | Device Service Account Token | N/A | `CB_SERVICE_ACCOUNT_TOKEN` | N/A |
 | Log Level | `--logLevel` | N/A | `info` |
 | Adapter Config Collection Name | `--adapterConfigCollection` | N/A | `adapter_config` |
 
 A System Key will always be required to start the adapter, and it's recommended to always use a Device Service Account & Token for Adapters.
-System Secret is **depreciated** and only provided for backwards compatibility. It should not be used for any new adapters. If provided its value will be ignored.
+be used for any new adapters. If provided its value will be ignored.
 
-Device Name and Password for Adapters are **depreciated** and only provided for backwards compatibility and should not be used for any new adapters.
 
 ## Adapter Configuration & Settings
 This library does require the use of an Adapter Configuration Collection. This allows you to easily provide configuration options to your adapter at runtime via this Collection, rather than command line arguments, environment variables, or hardcoded values in your adapter.
@@ -94,5 +90,4 @@ adapter.publish("topic/name", "message payload")
 There are a few cases where this library will encounter a fatal error and cause your adapter to quit. A log with more information will be provided, but as a heads up these are the current cases that will cause the adapter to exit from within the library:
 
 1. If required arguments (System Key, authentication credentials etc.) are not provided
-2. If you are using a **depreciated** device name and password for authentication and MQTT disconnects with certain error codes
-3. If your adapter subscribes to a topic and the device account used by the adapter does not have subscribe permissions on this topic (a warning will be logged)
+2. If your adapter subscribes to a topic and the device account used by the adapter does not have subscribe permissions on this topic (a warning will be logged)
