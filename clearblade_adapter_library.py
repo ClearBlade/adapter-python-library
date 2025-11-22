@@ -9,7 +9,6 @@ class AdapterLibrary:
     DEFAULT_ADAPTER_CONFIG_COLLECTION_NAME  = "adapter_config"
 
     SYSTEM_KEY_ARG_KEY                      = "CB_SYSTEM_KEY"
-    SYSTEM_SECRET_ARG_KEY                   = "CB_SYSTEM_SECRET"
     DEVICE_NAME_ARG_KEY                     = "device_name"
     ACTIVE_KEY_ARG_KEY                      = "active_key"
     SERVICE_ACCOUNT_ARG_KEY                 = "CB_SERVICE_ACCOUNT"
@@ -42,9 +41,6 @@ class AdapterLibrary:
         if self.SYSTEM_KEY_ARG_KEY not in self._args:
             cbLogs.error("System Key is required, can be supplied with --systemKey flag or " + self.SYSTEM_KEY_ARG_KEY + " environment variable")
             exit(-1)
-        if self.SYSTEM_SECRET_ARG_KEY not in self._args:
-            cbLogs.error("System Secret is required, can be supplied with --systemSecret flag or " + self.SYSTEM_SECRET_ARG_KEY + " environment variable")
-            exit(-1)
         if self.ACTIVE_KEY_ARG_KEY not in self._args and self.SERVICE_ACCOUNT_ARG_KEY not in self._args:
             cbLogs.error("Device Password is required when not using a Service Account, can be supplied with --password flag")
             exit(-1)
@@ -56,7 +52,9 @@ class AdapterLibrary:
     def initialize_clearblade(self):
         cbLogs.info("AdapterLibrary - initialize_clearblade - initializing with ClearBlade")
 
-        self._cb_system = System(self._args[self.SYSTEM_KEY_ARG_KEY], self._args[self.SYSTEM_SECRET_ARG_KEY], self._args[self.PLATFORM_URL_ARG_KEY])
+        # System Secret was deprecated as of ClearBlade Platform version 9.38.0, however the ClearBlade Python SDK
+        # still expects a System Secret here. Sending a blank string for System Secret is acceptable.
+        self._cb_system = System(self._args[self.SYSTEM_KEY_ARG_KEY], "", self._args[self.PLATFORM_URL_ARG_KEY])
         
         if self.SERVICE_ACCOUNT_ARG_KEY in self._args:
             self.__auth_with_service_account()
@@ -142,7 +140,7 @@ class AdapterLibrary:
     def __parse_env_variables(self):
         """Parse environment variables"""
         env = os.environ
-        possible_vars = [self.SYSTEM_KEY_ARG_KEY, self.SYSTEM_SECRET_ARG_KEY, self.SERVICE_ACCOUNT_ARG_KEY, self.SERVICE_ACCOUNT_TOKEN_ARG_KEY]
+        possible_vars = [self.SYSTEM_KEY_ARG_KEY, self.SERVICE_ACCOUNT_ARG_KEY, self.SERVICE_ACCOUNT_TOKEN_ARG_KEY]
         
         for var in possible_vars:
             if var in env:
@@ -155,10 +153,6 @@ class AdapterLibrary:
         parser = argparse.ArgumentParser(description='ClearBlade Adapter')
         parser.add_argument('--systemKey', dest=self.SYSTEM_KEY_ARG_KEY, help='The System Key of the ClearBlade \
                             Plaform "System" the adapter will connect to.')
-
-        parser.add_argument('--systemSecret', dest=self.SYSTEM_SECRET_ARG_KEY, help='The System Secret of the \
-                            ClearBlade Plaform "System" the adapter will connect to.')
-
         parser.add_argument('--deviceName', dest=self.DEVICE_NAME_ARG_KEY, default=self.adapter_name, help='The name of the device that will be used for device \
                             authentication against the ClearBlade Platform or Edge, defined \
                             within the devices table of the ClearBlade platform. The default is ' + self.adapter_name)
@@ -211,7 +205,6 @@ if __name__ == "__main__":
     
     python clearblade_adapter_library.py \
         --systemKey="<your system key>" \
-        --systemSecret="<your system secret>" \
         --platformURL="https://<your instance name>.clearblade.com" \
         --messagingURL="<your instance name>.clearblade.com"
     

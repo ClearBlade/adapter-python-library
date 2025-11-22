@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "clearblade-adapter-library"
+version = "1.0.0"
+description = "The adapter-python-library streamlines the development process for ClearBlade Adapters written in Python"
+authors = ["ClearBlade"]
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/ClearBlade/adapter-python-library"
+repository = "https://github.com/ClearBlade/adapter-python-library"
+packages = [{include = "clearblade_adapter_library.py"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+clearblade = "^2.4.0"
+requests = "^2.32.4"
+urllib3 = "^2.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
